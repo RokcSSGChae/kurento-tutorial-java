@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.kurento.client.Continuation;
 import org.kurento.client.ErrorEvent;
@@ -20,6 +22,9 @@ import com.google.gson.JsonObject;
 public class Room {
 
 	private final static Logger log = LoggerFactory.getLogger(Room.class);
+
+	public static final int ASYNC_LATCH_TIMEOUT = 30;
+	private CountDownLatch pipelineLatch = new CountDownLatch(1);
 
 	private final String name;
 	private final ConcurrentMap<String, UserSession> participants = new ConcurrentHashMap<String, UserSession>();
@@ -37,7 +42,12 @@ public class Room {
 	}
 
 	public MediaPipeline getPipeline() {
-		return pipeline;
+		try {
+			pipelineLatch.await(Room.ASYNC_LATCH_TIMEOUT, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+		return this.pipeline;
 	}
 
 	public KurentoClient getKurentoClient() {
@@ -110,16 +120,19 @@ public class Room {
 					@Override
 					public void onSuccess(MediaPipeline result) throws Exception {
 						pipeline = result;
+						pipelineLatch.countDown();
 						log.debug("success : " + pipeline);
 						log.debug("ROOM {}: Created MediaPipeline", name);
 					}
 
 					@Override
 					public void onError(Throwable cause) throws Exception {
+						pipelineLatch.countDown();
 						log.error("ROOM {}: Failed to create MediaPipeline", name, cause);
 					}
 				});
 			} catch (Exception e) {
+				pipelineLatch.countDown();
 				log.error("Unable to create media pipeline for room '{}'", name, e);
 			}
 		}
