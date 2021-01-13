@@ -100,6 +100,7 @@ public class Room {
 			log.debug("pipeline alreday exist");
 			return;
 		}
+		log.debug("joinByPresenter()----");
 		try {
 			kurentoClient.createMediaPipeline(new Continuation<MediaPipeline>() {
 
