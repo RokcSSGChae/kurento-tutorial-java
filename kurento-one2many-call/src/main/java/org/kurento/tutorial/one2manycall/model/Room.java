@@ -28,6 +28,8 @@ public class Room {
 	private KurentoClient kurentoClient;
 	private UserSession presenter;
 
+	private Object pipelineCreateLock = new Object();
+
 	public Room(String name, KurentoClient kurentoClient) {
 		super();
 		this.name = name;
@@ -101,24 +103,27 @@ public class Room {
 			return;
 		}
 		log.debug("joinByPresenter()----");
-		try {
-			kurentoClient.createMediaPipeline(new Continuation<MediaPipeline>() {
+		synchronized (pipelineCreateLock) {
+			try {
+				kurentoClient.createMediaPipeline(new Continuation<MediaPipeline>() {
 
-				@Override
-				public void onSuccess(MediaPipeline result) throws Exception {
-					pipeline = result;
-					log.debug("success : " + pipeline);
-					log.debug("ROOM {}: Created MediaPipeline", name);
-				}
+					@Override
+					public void onSuccess(MediaPipeline result) throws Exception {
+						pipeline = result;
+						log.debug("success : " + pipeline);
+						log.debug("ROOM {}: Created MediaPipeline", name);
+					}
 
-				@Override
-				public void onError(Throwable cause) throws Exception {
-					log.error("ROOM {}: Failed to create MediaPipeline", name, cause);
-				}
-			});
-		} catch (Exception e) {
-			log.error("Unable to create media pipeline for room '{}'", name, e);
+					@Override
+					public void onError(Throwable cause) throws Exception {
+						log.error("ROOM {}: Failed to create MediaPipeline", name, cause);
+					}
+				});
+			} catch (Exception e) {
+				log.error("Unable to create media pipeline for room '{}'", name, e);
+			}
 		}
+
 		log.info("pipeline  : " + (pipeline == null));
 		log.info("user : " + (user == null));
 		presenter = user;
