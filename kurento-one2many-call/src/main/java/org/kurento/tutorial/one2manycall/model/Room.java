@@ -49,42 +49,9 @@ public class Room {
 	public Map<String, UserSession> getParticipants() {
 		return participants;
 	}
-	
+
 	public UserSession getPresenter() {
 		return presenter;
-	}
-
-	public void createPipeline() {
-		if (pipeline != null) {
-			return;
-		}
-		try {
-			kurentoClient.createMediaPipeline(new Continuation<MediaPipeline>() {
-
-				@Override
-				public void onSuccess(MediaPipeline result) throws Exception {
-					pipeline = result;
-					System.out.println("success : " + (pipeline == null));
-					log.debug("ROOM {}: Created MediaPipeline", name);
-				}
-
-				@Override
-				public void onError(Throwable cause) throws Exception {
-					log.error("ROOM {}: Failed to create MediaPipeline", name, cause);
-				}
-			});
-		} catch (Exception e) {
-			log.error("Unable to create media pipeline for room '{}'", name, e);
-		}
-
-//		pipeline.addErrorListener(new EventListener<ErrorEvent>() {
-//
-//			@Override
-//			public void onEvent(ErrorEvent event) {
-//				System.out.println("event");
-//				log.warn("ROOM {}: Pipeline error encountered", name);
-//			}
-//		});
 	}
 
 	public void closePipeline() {
@@ -106,35 +73,55 @@ public class Room {
 	}
 
 	public void close() throws IOException {
-		for(UserSession user : participants.values()) {
+		for (UserSession user : participants.values()) {
 			JsonObject response = new JsonObject();
 			response.addProperty("id", "stopCommunication");
 			user.sendMessage(response);
 		}
-		if(pipeline != null) {
+		if (pipeline != null) {
 			pipeline.release();
 			pipeline = null;
 		}
 	}
-	
+
 	public void joinByViewer(UserSession user) {
-		if(user == null) {
+		if (user == null) {
 			return;
 		}
 		participants.put(user.getSession().getId(), user);
 	}
-	
+
 	public void joinByPresenter(UserSession user) {
-		if(presenter != null) {
+		if (presenter != null) {
 			return;
 		}
-		createPipeline();
-		System.out.println("pipeline : " + (pipeline == null));
-		System.out.println("user : " + (user == null));
+		if (pipeline != null) {
+			return;
+		}
+		try {
+			kurentoClient.createMediaPipeline(new Continuation<MediaPipeline>() {
+
+				@Override
+				public void onSuccess(MediaPipeline result) throws Exception {
+					pipeline = result;
+					log.debug("success : " + pipeline);
+					log.debug("ROOM {}: Created MediaPipeline", name);
+				}
+
+				@Override
+				public void onError(Throwable cause) throws Exception {
+					log.error("ROOM {}: Failed to create MediaPipeline", name, cause);
+				}
+			});
+		} catch (Exception e) {
+			log.error("Unable to create media pipeline for room '{}'", name, e);
+		}
+		log.info("pipeline  : " + (pipeline == null));
+		log.info("user : " + (user == null));
 		presenter = user;
 		presenter.setWebRtcEndpoint(new WebRtcEndpoint.Builder(pipeline).build());
 	}
-	
+
 	public void removeUser(UserSession user) {
 		participants.remove(user.getSession().getId());
 	}
