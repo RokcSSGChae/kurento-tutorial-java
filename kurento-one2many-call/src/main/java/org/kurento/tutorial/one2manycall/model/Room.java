@@ -93,9 +93,11 @@ public class Room {
 
 	public void joinByPresenter(UserSession user) {
 		if (presenter != null) {
+			log.debug("presenter alreday exist");
 			return;
 		}
 		if (pipeline != null) {
+			log.debug("pipeline alreday exist");
 			return;
 		}
 		try {
