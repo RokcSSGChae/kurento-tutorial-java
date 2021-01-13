@@ -140,7 +140,7 @@ public class Room {
 		log.info("pipeline  : " + (pipeline == null));
 		log.info("user : " + (user == null));
 		presenter = user;
-		presenter.setWebRtcEndpoint(new WebRtcEndpoint.Builder(pipeline).build());
+		presenter.setWebRtcEndpoint(new WebRtcEndpoint.Builder(getPipeline()).build());
 	}
 
 	public void removeUser(UserSession user) {
