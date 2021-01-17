@@ -143,6 +143,8 @@ public class SendDataChannelHandler extends TextWebSocketHandler {
 
       // Media logic
       KmsSendData kmsSendData = new KmsSendData.Builder(pipeline).build();
+      log.debug("kmsSendData = " + kmsSendData.getId());
+      log.debug("pipeline = " + pipeline.getId());
 
       player.connect(kmsSendData);
       kmsSendData.connect(webRtcEndpoint);
