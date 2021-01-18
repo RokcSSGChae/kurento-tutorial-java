@@ -20,6 +20,7 @@ package org.kurento.tutorial.showdatachannel;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.kurento.client.DataChannelOpenEvent;
 import org.kurento.client.EventListener;
 import org.kurento.client.IceCandidate;
 import org.kurento.client.IceCandidateFoundEvent;
@@ -118,7 +119,17 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 				}
 			});
 			
-			WebRtcEndpoint point = new WebRtcEndpoint.Builder(pipeline).useDataChannels().build();
+			WebRtcEndpoint point = new WebRtcEndpoint.Builder(pipeline).build();
+			
+			point.addDataChannelOpenListener(new EventListener<DataChannelOpenEvent>() {
+				
+				@Override
+				public void onEvent(DataChannelOpenEvent event) {
+					log.info("datachannel open : " + event.getChannelId());
+				}
+			});
+			
+			point.createDataChannel();
 
 			webRtcEndpoint.connect(point);
 			point.connect(webRtcEndpoint);
