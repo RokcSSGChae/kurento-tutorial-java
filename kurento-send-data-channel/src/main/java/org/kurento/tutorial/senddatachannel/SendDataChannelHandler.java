@@ -144,6 +144,7 @@ public class SendDataChannelHandler extends TextWebSocketHandler {
       });
 
       player.connect(webRtcEndpoint);
+      player.play();
 
       // SDP negotiation (offer and answer)
       String sdpOffer = jsonMessage.get("sdpOffer").getAsString();
