@@ -110,6 +110,11 @@ function start() {
     		'credential' : 'root',
   		}]
 	};
+	
+	var constraints = {
+  		audio: false,
+  		video: false
+	};
 
 	var options = {
 			dataChannels : true,
@@ -120,7 +125,8 @@ function start() {
 				onmessage : onMessage
 			},
 			onicecandidate : onIceCandidate,
-			configuration : configuration
+			configuration : configuration,
+			mediaConstraints: constraints
 	}
 
 	webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options,

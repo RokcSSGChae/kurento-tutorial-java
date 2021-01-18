@@ -93,7 +93,6 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 	}
 
 	private void start(final WebSocketSession session, JsonObject jsonMessage) {
-		System.out.println("-------before start()--------");
 		try {
 			// User session
 			System.out.println("-------start()--------");
@@ -144,6 +143,49 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 			}
 
 			webRtcEndpoint.gatherCandidates();
+
+		} catch (Throwable t) {
+			sendError(session, t.getMessage());
+		}
+	}
+	
+	private void view(final WebSocketSession session, JsonObject jsonMessage) {
+		System.out.println("-------start view()--------");
+		try {
+			UserSession user = new UserSession();
+			UserSession sendUser = users.get(session.getId());
+			WebRtcEndpoint rtcPoint = new WebRtcEndpoint.Builder(sendUser.getMediaPipeline()).build();
+			user.setWebRtcEndpoint(rtcPoint);
+			sendUser.getWebRtcEndpoint().connect(user.getWebRtcEndpoint());
+			user.getWebRtcEndpoint().addIceCandidateFoundListener(new EventListener<IceCandidateFoundEvent>() {
+				
+				@Override
+				public void onEvent(IceCandidateFoundEvent event) {
+					JsonObject response = new JsonObject();
+					response.addProperty("id", "iceCandidate");
+					response.add("candidate", JsonUtils.toJsonObject(event.getCandidate()));
+					try {
+						synchronized (session) {
+							session.sendMessage(new TextMessage(response.toString()));
+						}
+					} catch (IOException e) {
+						log.debug(e.getMessage());
+					}
+				}
+			});
+			
+			String sdpOffer = jsonMessage.getAsJsonPrimitive("sdpOffer").getAsString();
+			String sdpAnswer = rtcPoint.processOffer(sdpOffer);
+
+			JsonObject response = new JsonObject();
+			response.addProperty("id", "viewerResponse");
+			response.addProperty("response", "accepted");
+			response.addProperty("sdpAnswer", sdpAnswer);
+
+			synchronized (session) {
+				session.sendMessage(new TextMessage(response.toString()));
+			}
+			rtcPoint.gatherCandidates();
 
 		} catch (Throwable t) {
 			sendError(session, t.getMessage());
