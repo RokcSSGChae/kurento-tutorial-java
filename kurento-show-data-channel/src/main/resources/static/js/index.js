@@ -106,8 +106,8 @@ function start() {
 	var configuration = {
   		'iceServers': [{
     		'urls': 'turn:117.17.196.61:3478',
-    		'credentials' : 'root',
-    		'username' : 'testuser'	
+    		'username' : 'testuser',
+    		'credential' : 'root',
   		}]
 	};
 
