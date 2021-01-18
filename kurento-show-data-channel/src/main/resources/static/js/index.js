@@ -83,7 +83,7 @@ function start() {
 	sendButton.addEventListener("click", function() {
 		var data = dataChannelSend.value;
 		console.log("Send button pressed. Sending data " + data);
-		receive();
+/*		receive();*/
 		webRtcPeer.send(data);
 		dataChannelSend.value = "";
 	});
@@ -126,7 +126,7 @@ function start() {
 			mediaConstraints: constraints
 	}
 
-	webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options,
+	webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options,
 			function(error) {
 		if (error) {
 			return console.error(error);
@@ -162,7 +162,7 @@ function receive(){
 			configuration : configuration
 	}
 
-	webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options,
+	webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options,
 			function(error) {
 		if (error) {
 			return console.error(error);
