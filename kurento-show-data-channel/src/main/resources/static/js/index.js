@@ -103,6 +103,14 @@ function start() {
 
 	console.log("Creating WebRtcPeer and generating local sdp offer ...");
 
+	var configuration = {
+  		'iceServers': [{
+    		'urls': 'turn:117.17.196.61:3478',
+    		'credentials' : 'root',
+    		'username' : 'testuser'	
+  		}]
+	};
+
 	var options = {
 			dataChannels : true,
 			dataChannelConfig: {
@@ -111,7 +119,8 @@ function start() {
 				onclose : onClosed,
 				onmessage : onMessage
 			},
-			onicecandidate : onIceCandidate
+			onicecandidate : onIceCandidate,
+			configuration : configuration
 	}
 
 	webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options,
