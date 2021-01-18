@@ -89,6 +89,7 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 					user.addCandidate(candidate);
 				} catch (Exception e) {
 					log.error(e.getMessage());
+					log.error(candidate.getCandidate() + " : " + candidate.getSdpMid() + " : " + candidate.getSdpMLineIndex());
 				}
 			}
 			break;
