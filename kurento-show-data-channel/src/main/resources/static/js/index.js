@@ -165,7 +165,8 @@ function receive(){
 				id : getChannelName(),
 				onmessage : onMessage
 			},
-			onicecandidate : onIceCandidate
+			onicecandidate : onIceCandidate,
+			configuration : configuration
 	}
 
 	webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options,

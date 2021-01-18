@@ -85,12 +85,7 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 			if (user != null) {
 				IceCandidate candidate = new IceCandidate(jsonCandidate.get("candidate").getAsString(),
 						jsonCandidate.get("sdpMid").getAsString(), jsonCandidate.get("sdpMLineIndex").getAsInt());
-				try {
-					user.addCandidate(candidate);
-				} catch (Exception e) {
-					log.error(e.getMessage());
-					log.error(candidate.getCandidate() + " : " + candidate.getSdpMid() + " : " + candidate.getSdpMLineIndex());
-				}
+				user.addCandidate(candidate);
 			}
 			break;
 		}
@@ -131,7 +126,7 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 					}
 				}
 			});
-			
+
 			WebRtcEndpoint point = new WebRtcEndpoint.Builder(pipeline).useDataChannels().build();
 			log.debug("point : success creating dataChannel");
 
@@ -156,7 +151,7 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 			sendError(session, t.getMessage());
 		}
 	}
-	
+
 	private void receive(final WebSocketSession session, JsonObject jsonMessage) {
 		log.debug("-------start receive()--------");
 		try {
@@ -170,8 +165,8 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 			log.debug("set rtcpoint in user");
 			sendUser.getWebRtcEndpoint().connect(user.getWebRtcEndpoint());
 			log.debug("connect success");
-			user.getWebRtcEndpoint().addIceCandidateFoundListener(new EventListener<IceCandidateFoundEvent>() {
-				
+			rtcPoint.addIceCandidateFoundListener(new EventListener<IceCandidateFoundEvent>() {
+
 				@Override
 				public void onEvent(IceCandidateFoundEvent event) {
 					JsonObject response = new JsonObject();
@@ -186,7 +181,7 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 					}
 				}
 			});
-			
+
 			String sdpOffer = jsonMessage.getAsJsonPrimitive("sdpOffer").getAsString();
 			String sdpAnswer = rtcPoint.processOffer(sdpOffer);
 
