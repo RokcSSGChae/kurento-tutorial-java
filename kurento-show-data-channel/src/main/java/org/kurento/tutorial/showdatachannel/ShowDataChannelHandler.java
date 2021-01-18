@@ -95,8 +95,11 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 	private void start(final WebSocketSession session, JsonObject jsonMessage) {
 		try {
 			// User session
+			log.debug("-------start()--------");
 			UserSession user = new UserSession();
+			log.debug("usersession create success");
 			MediaPipeline pipeline = kurento.createMediaPipeline();
+			log.debug("pipeline create success");
 			user.setMediaPipeline(pipeline);
 			log.debug("create dataChannel");
 			WebRtcEndpoint webRtcEndpoint = new WebRtcEndpoint.Builder(pipeline).useDataChannels().build();
