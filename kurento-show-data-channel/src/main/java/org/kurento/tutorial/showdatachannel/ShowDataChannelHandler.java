@@ -93,6 +93,7 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 	}
 
 	private void start(final WebSocketSession session, JsonObject jsonMessage) {
+		log.debug("-------before start()--------");
 		try {
 			// User session
 			log.debug("-------start()--------");
