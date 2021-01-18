@@ -121,6 +121,14 @@ function start() {
 		}
 		webRtcPeer.generateOffer(onOffer);
 	});
+	
+	if(dataChannel){
+		console.log("not null");
+	}
+	
+	if(dataChannel.readyState === 'open'){
+		console.log("ready");
+	}
 }
 
 function onOffer(error, offerSdp) {
