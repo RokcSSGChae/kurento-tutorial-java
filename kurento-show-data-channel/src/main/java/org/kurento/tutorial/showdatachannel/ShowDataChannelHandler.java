@@ -144,7 +144,7 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 	private void receive(final WebSocketSession session, JsonObject jsonMessage) {
 		try {
 			UserSession user = new UserSession();
-			WebRtcEndpoint nextWebRtc = new WebRtcEndpoint.Builder(pipeline).build();
+			WebRtcEndpoint nextWebRtc = new WebRtcEndpoint.Builder(pipeline).useDataChannels().build();
 			nextWebRtc.addIceCandidateFoundListener(new EventListener<IceCandidateFoundEvent>() {
 
 				@Override
