@@ -26,7 +26,7 @@ const I_AM_STARTING = 2;
 var chanId = 0;
 
 function getChannelName () {
-	return "TestChannel" + chanId;
+	return "TestChannel" + chanId++;
 }
 
 window.onload = function() {
@@ -78,7 +78,6 @@ function start() {
 	setState(I_AM_STARTING);
 
 	var dataChannelSend = document.getElementById('dataChannelSend');
-	var dataChannelRecv = document.getElementById('dataChannelRecv');
 
 	var sendButton = document.getElementById('send');
 	sendButton.addEventListener("click", function() {
