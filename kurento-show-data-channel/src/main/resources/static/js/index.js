@@ -75,6 +75,7 @@ function start() {
 	setState(I_AM_STARTING);
 
 	var dataChannelSend = document.getElementById('dataChannelSend');
+	var dataChannelRecv = document.getElementById('dataChannelRecv');
 
 	var sendButton = document.getElementById('send');
 	sendButton.addEventListener("click", function() {
@@ -94,6 +95,11 @@ function start() {
 		dataChannelSend.disabled = true;
 		$('#send').attr('disabled', true);
 	}
+	
+	function onMessage(event) {
+		console.log("Received data " + event["data"]);
+		dataChannelRecv.value = event["data"];
+	}
 
 	console.log("Creating WebRtcPeer and generating local sdp offer ...");
 
@@ -101,7 +107,8 @@ function start() {
 			dataChannelConfig: {
 				id : getChannelName(),
 				onopen : onOpen,
-				onclose : onClosed
+				onclose : onClosed,
+				onmessage : onMessage
 			},
 			dataChannels : true,
 			onicecandidate : onIceCandidate
