@@ -16,8 +16,6 @@
  */
 
 var ws = new WebSocket('wss://' + location.host + '/showdatachannel');
-var videoInput;
-var videoOutput;
 var webRtcPeer;
 var state = null;
 
@@ -34,8 +32,6 @@ function getChannelName () {
 window.onload = function() {
 	console = new Console();
 	console.log("Page loaded ...");
-	videoInput = document.getElementById('videoInput');
-	videoOutput = document.getElementById('videoOutput');
 	setState(I_CAN_START);
 }
 
@@ -74,10 +70,9 @@ ws.onmessage = function(message) {
 }
 
 function start() {
-	console.log("Starting video call ...")
+	console.log("Starting...")
 	// Disable start button
 	setState(I_AM_STARTING);
-	showSpinner(videoInput, videoOutput);
 
 	var dataChannelSend = document.getElementById('dataChannelSend');
 
@@ -103,8 +98,6 @@ function start() {
 	console.log("Creating WebRtcPeer and generating local sdp offer ...");
 
 	var options = {
-			localVideo : videoInput,
-			remoteVideo : videoOutput,
 			dataChannelConfig: {
 				id : getChannelName(),
 				onopen : onOpen,
@@ -159,7 +152,7 @@ function startResponse(message) {
 }
 
 function stop() {
-	console.log("Stopping video call ...");
+	console.log("Stopping...");
 	setState(I_CAN_START);
 	if (webRtcPeer) {
 
@@ -171,7 +164,6 @@ function stop() {
 		}
 		sendMessage(message);
 	}
-	hideSpinner(videoInput, videoOutput);
 }
 
 function setState(nextState) {
@@ -209,20 +201,6 @@ function sendMessage(message) {
 	ws.send(jsonMessage);
 }
 
-function showSpinner() {
-	for (var i = 0; i < arguments.length; i++) {
-		arguments[i].poster = './img/transparent-1px.png';
-		arguments[i].style.background = "center transparent url('./img/spinner.gif') no-repeat";
-	}
-}
-
-function hideSpinner() {
-	for (var i = 0; i < arguments.length; i++) {
-		arguments[i].src = '';
-		arguments[i].poster = './img/webrtc.png';
-		arguments[i].style.background = '';
-	}
-}
 /**
  * Lightbox utility (to display media pipeline image in a modal dialog)
  */

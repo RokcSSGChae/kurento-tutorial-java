@@ -16,7 +16,6 @@
  */
 
 var ws = new WebSocket('wss://' + location.host + '/senddatachannel');
-var videoOutput;
 var webRtcPeer;
 var state = null;
 var channel;
@@ -34,7 +33,6 @@ function getChannelName() {
 window.onload = function() {
 	console = new Console();
 	console.log("Page loaded ...");
-	videoOutput = document.getElementById('videoOutput');
 	setState(I_CAN_START);
 }
 
@@ -76,11 +74,9 @@ ws.onmessage = function(message) {
 }
 
 function start() {
-	console.log("Starting video call ...")
+	console.log("Starting ...")
 	// Disable start button
 	setState(I_AM_STARTING);
-	showSpinner(videoOutput);
-
 	var dataChannelReceive = document.getElementById('dataChannelReceive');
 
 	function onMessage(event) {
