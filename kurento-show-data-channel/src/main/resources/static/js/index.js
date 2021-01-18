@@ -112,7 +112,7 @@ function start() {
 	};
 	
 	var constraints = {
-  		audio: false,
+  		audio: true,
   		video: false
 	};
 
