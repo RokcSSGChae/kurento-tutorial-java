@@ -93,18 +93,18 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 	}
 
 	private void start(final WebSocketSession session, JsonObject jsonMessage) {
-		log.debug("-------before start()--------");
+		System.out.println("-------before start()--------");
 		try {
 			// User session
-			log.debug("-------start()--------");
+			System.out.println("-------start()--------");
 			UserSession user = new UserSession();
-			log.debug("usersession create success");
+			System.out.println("usersession create success");
 			MediaPipeline pipeline = kurento.createMediaPipeline();
-			log.debug("pipeline create success");
+			System.out.println("pipeline create success");
 			user.setMediaPipeline(pipeline);
-			log.debug("create dataChannel");
+			System.out.println("create dataChannel");
 			WebRtcEndpoint webRtcEndpoint = new WebRtcEndpoint.Builder(pipeline).useDataChannels().build();
-			log.debug("success creating dataChannel");
+			System.out.println("success creating dataChannel");
 			user.setWebRtcEndpoint(webRtcEndpoint);
 			users.put(session.getId(), user);
 
@@ -135,9 +135,9 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 				}
 			});
 			
-			log.debug("point : try creating dataChannel");
+			System.out.println("point : try creating dataChannel");
 			point.createDataChannel();
-			log.debug("point : success creating dataChannel");
+			System.out.println("point : success creating dataChannel");
 
 			webRtcEndpoint.connect(point);
 			point.connect(webRtcEndpoint);
