@@ -186,7 +186,7 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 			String sdpAnswer = rtcPoint.processOffer(sdpOffer);
 
 			JsonObject response = new JsonObject();
-			response.addProperty("id", "viewerResponse");
+			response.addProperty("id", "receiveResponse");
 			response.addProperty("response", "accepted");
 			response.addProperty("sdpAnswer", sdpAnswer);
 

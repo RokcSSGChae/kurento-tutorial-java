@@ -47,6 +47,9 @@ ws.onmessage = function(message) {
 	case 'startResponse':
 		startResponse(parsedMessage);
 		break;
+	case 'startResponse':
+		receiveResponse(parsedMessage);
+		break;
 	case 'error':
 		if (state == I_AM_STARTING) {
 			setState(I_CAN_START);
@@ -220,6 +223,16 @@ function startResponse(message) {
 			return console.error(error);
 	});
 }
+
+function receiveResponse(message) {
+	console.log("SDP answer received from server. Processing ...");
+
+	webRtcPeer.processAnswer(message.sdpAnswer, function(error) {
+		if (error)
+			return console.error(error);
+	});
+}
+
 
 function stop() {
 	console.log("Stopping...");
