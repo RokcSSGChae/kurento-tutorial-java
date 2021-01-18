@@ -47,7 +47,7 @@ ws.onmessage = function(message) {
 	case 'startResponse':
 		startResponse(parsedMessage);
 		break;
-	case 'startResponse':
+	case 'receiveResponse':
 		receiveResponse(parsedMessage);
 		break;
 	case 'error':
