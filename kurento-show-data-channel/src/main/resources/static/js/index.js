@@ -104,13 +104,13 @@ function start() {
 	console.log("Creating WebRtcPeer and generating local sdp offer ...");
 
 	var options = {
+			dataChannels : true,
 			dataChannelConfig: {
 				id : getChannelName(),
 				onopen : onOpen,
 				onclose : onClosed,
 				onmessage : onMessage
 			},
-			dataChannels : true,
 			onicecandidate : onIceCandidate
 	}
 
