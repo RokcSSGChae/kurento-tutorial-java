@@ -227,7 +227,7 @@ function receiveResponse(message) {
 }
 
 
-function stop() {
+/*function stop() {
 	console.log("Stopping...");
 	setState(I_CAN_START);
 	if (webRtcPeer) {
@@ -240,7 +240,7 @@ function stop() {
 		}
 		sendMessage(message);
 	}
-}
+}*/
 
 function setState(nextState) {
 	switch (nextState) {
