@@ -85,7 +85,11 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 			if (user != null) {
 				IceCandidate candidate = new IceCandidate(jsonCandidate.get("candidate").getAsString(),
 						jsonCandidate.get("sdpMid").getAsString(), jsonCandidate.get("sdpMLineIndex").getAsInt());
-				user.addCandidate(candidate);
+				try {
+					user.addCandidate(candidate);
+				} catch (Exception e) {
+					log.error(e.getMessage());
+				}
 			}
 			break;
 		}
