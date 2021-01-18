@@ -26,7 +26,7 @@ const I_AM_STARTING = 2;
 var chanId = 0;
 
 function getChannelName () {
-	return "TestChannel" + chanId++;
+	return "TestChannel" + chanId;
 }
 
 window.onload = function() {
