@@ -106,6 +106,7 @@ public class SendDataChannelHandler extends TextWebSocketHandler {
       user.setWebRtcEndpoint(webRtcEndpoint);
       PlayerEndpoint player = new PlayerEndpoint.Builder(pipeline,
           "http://files.openvidu.io/video/filter/barcodes.webm").build();
+      log.debug("player = " + player.getId());
       user.setPlayer(player);
       users.put(session.getId(), user);
 
