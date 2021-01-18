@@ -75,6 +75,9 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 			}
 			break;
 		}
+		case "receive":
+			receive(session, jsonMessage);
+			break;
 		case "onIceCandidate": {
 			JsonObject jsonCandidate = jsonMessage.get("candidate").getAsJsonObject();
 
@@ -149,8 +152,8 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 		}
 	}
 	
-	private void view(final WebSocketSession session, JsonObject jsonMessage) {
-		System.out.println("-------start view()--------");
+	private void receive(final WebSocketSession session, JsonObject jsonMessage) {
+		System.out.println("-------start receive()--------");
 		try {
 			UserSession user = new UserSession();
 			UserSession sendUser = users.get(session.getId());

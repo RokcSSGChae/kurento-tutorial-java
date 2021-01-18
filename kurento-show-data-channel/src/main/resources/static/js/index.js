@@ -83,6 +83,7 @@ function start() {
 		console.log("Send button pressed. Sending data " + data);
 		webRtcPeer.send(data);
 		dataChannelSend.value = "";
+		receive();
 	});
 
 	function onOpen(event) {
@@ -136,6 +137,53 @@ function start() {
 		}
 		webRtcPeer.generateOffer(onOffer);
 	});
+}
+
+function receive(){
+	console.log("Receiving...")
+	var dataChannelRecv = document.getElementById('dataChannelRecv');
+	
+	function onMessage(event) {
+		console.log("Received data " + event["data"]);
+		dataChannelRecv.value = event["data"];
+	}
+	
+	var configuration = {
+  		'iceServers': [{
+    		'urls': 'turn:117.17.196.61:3478',
+    		'username' : 'testuser',
+    		'credential' : 'root',
+  		}]
+	};
+
+	var options = {
+			dataChannels : true,
+			dataChannelConfig: {
+				id : getChannelName(),
+				onmessage : onMessage
+			},
+			onicecandidate : onIceCandidate,
+			configuration : configuration
+	}
+
+	webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options,
+			function(error) {
+		if (error) {
+			return console.error(error);
+		}
+		webRtcPeer.generateOffer(onOfferReceiver);
+	});
+}
+
+function onOfferReceiver(error, offerSdp) {
+	if (error)
+		return console.error('Error generating the offer');
+	console.info('Invoking SDP offer callback function ' + location.host);
+	var message = {
+		id : 'receive',
+		sdpOffer : offerSdp
+	}
+	sendMessage(message);
 }
 
 function onOffer(error, offerSdp) {
