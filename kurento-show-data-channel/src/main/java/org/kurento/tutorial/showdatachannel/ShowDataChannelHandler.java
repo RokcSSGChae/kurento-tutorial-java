@@ -57,6 +57,9 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 
 	@Autowired
 	private KurentoClient kurento;
+	
+	private UserSession sendUser;
+	private MediaPipeline pipeline;
 
 	@Override
 	public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
@@ -85,7 +88,7 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 			if (user != null) {
 				IceCandidate candidate = new IceCandidate(jsonCandidate.get("candidate").getAsString(),
 						jsonCandidate.get("sdpMid").getAsString(), jsonCandidate.get("sdpMLineIndex").getAsInt());
-//				user.addCandidate(candidate);
+				user.addCandidate(candidate);
 			}
 			break;
 		}
@@ -97,18 +100,10 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 
 	private void start(final WebSocketSession session, JsonObject jsonMessage) {
 		try {
-			// User session
-			log.debug("-------start()--------");
-			UserSession user = new UserSession();
-			log.debug("usersession create success");
-			MediaPipeline pipeline = kurento.createMediaPipeline();
-			log.debug("pipeline create success");
-			user.setMediaPipeline(pipeline);
-			log.debug("create dataChannel");
-			WebRtcEndpoint webRtcEndpoint = new WebRtcEndpoint.Builder(pipeline).useDataChannels().build();
-			log.debug("success creating dataChannel");
-			user.setWebRtcEndpoint(webRtcEndpoint);
-			users.put(session.getId(), user);
+			sendUser = new UserSession();
+			pipeline = kurento.createMediaPipeline();
+			sendUser.setWebRtcEndpoint(new WebRtcEndpoint.Builder(pipeline).useDataChannels().build());
+			WebRtcEndpoint webRtcEndpoint = sendUser.getWebRtcEndpoint();
 
 			webRtcEndpoint.addIceCandidateFoundListener(new EventListener<IceCandidateFoundEvent>() {
 
@@ -126,12 +121,6 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 					}
 				}
 			});
-
-			WebRtcEndpoint point = new WebRtcEndpoint.Builder(pipeline).useDataChannels().build();
-			log.debug("point : success creating dataChannel");
-
-			webRtcEndpoint.connect(point);
-			point.connect(webRtcEndpoint);
 
 			// SDP negotiation (offer and answer)
 			String sdpOffer = jsonMessage.get("sdpOffer").getAsString();
@@ -153,19 +142,10 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 	}
 
 	private void receive(final WebSocketSession session, JsonObject jsonMessage) {
-		log.debug("-------start receive()--------");
 		try {
 			UserSession user = new UserSession();
-			log.debug("userSession create");
-			UserSession sendUser = users.get(session.getId());
-			log.debug("get sendUser from users");
-			WebRtcEndpoint rtcPoint = new WebRtcEndpoint.Builder(sendUser.getMediaPipeline()).build();
-			log.debug("rtcPoint create");
-			user.setWebRtcEndpoint(rtcPoint);
-			log.debug("set rtcpoint in user");
-			sendUser.getWebRtcEndpoint().connect(user.getWebRtcEndpoint());
-			log.debug("connect success");
-			rtcPoint.addIceCandidateFoundListener(new EventListener<IceCandidateFoundEvent>() {
+			WebRtcEndpoint nextWebRtc = new WebRtcEndpoint.Builder(pipeline).build();
+			nextWebRtc.addIceCandidateFoundListener(new EventListener<IceCandidateFoundEvent>() {
 
 				@Override
 				public void onEvent(IceCandidateFoundEvent event) {
@@ -181,9 +161,11 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 					}
 				}
 			});
-
+			
+			user.setWebRtcEndpoint(nextWebRtc);
+			sendUser.getWebRtcEndpoint().connect(nextWebRtc);
 			String sdpOffer = jsonMessage.getAsJsonPrimitive("sdpOffer").getAsString();
-			String sdpAnswer = rtcPoint.processOffer(sdpOffer);
+			String sdpAnswer = nextWebRtc.processOffer(sdpOffer);
 
 			JsonObject response = new JsonObject();
 			response.addProperty("id", "receiveResponse");
@@ -193,7 +175,7 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 			synchronized (session) {
 				session.sendMessage(new TextMessage(response.toString()));
 			}
-			rtcPoint.gatherCandidates();
+			nextWebRtc.gatherCandidates();
 
 		} catch (Throwable t) {
 			sendError(session, t.getMessage());

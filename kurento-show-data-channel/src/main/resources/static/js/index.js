@@ -99,11 +99,6 @@ function start() {
 		dataChannelSend.disabled = true;
 		$('#send').attr('disabled', true);
 	}
-	
-	function onMessage(event) {
-		console.log("Received data " + event["data"]);
-		dataChannelRecv.value = event["data"];
-	}
 
 	console.log("Creating WebRtcPeer and generating local sdp offer ...");
 
@@ -125,15 +120,14 @@ function start() {
 			dataChannelConfig: {
 				id : getChannelName(),
 				onopen : onOpen,
-				onclose : onClosed,
-				onmessage : onMessage
+				onclose : onClosed
 			},
 			onicecandidate : onIceCandidate,
 			configuration : configuration,
 			mediaConstraints: constraints
 	}
 
-	webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options,
+	webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options,
 			function(error) {
 		if (error) {
 			return console.error(error);
