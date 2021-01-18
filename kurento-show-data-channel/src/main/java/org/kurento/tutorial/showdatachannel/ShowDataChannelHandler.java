@@ -125,18 +125,7 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 				}
 			});
 			
-			WebRtcEndpoint point = new WebRtcEndpoint.Builder(pipeline).build();
-			
-			point.addDataChannelOpenListener(new EventListener<DataChannelOpenEvent>() {
-				
-				@Override
-				public void onEvent(DataChannelOpenEvent event) {
-					log.info("datachannel open : " + event.getChannelId());
-				}
-			});
-			
-			System.out.println("point : try creating dataChannel");
-			point.createDataChannel();
+			WebRtcEndpoint point = new WebRtcEndpoint.Builder(pipeline).useDataChannels().build();
 			System.out.println("point : success creating dataChannel");
 
 			webRtcEndpoint.connect(point);
