@@ -98,15 +98,15 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 	private void start(final WebSocketSession session, JsonObject jsonMessage) {
 		try {
 			// User session
-			System.out.println("-------start()--------");
+			log.debug("-------start()--------");
 			UserSession user = new UserSession();
-			System.out.println("usersession create success");
+			log.debug("usersession create success");
 			MediaPipeline pipeline = kurento.createMediaPipeline();
-			System.out.println("pipeline create success");
+			log.debug("pipeline create success");
 			user.setMediaPipeline(pipeline);
-			System.out.println("create dataChannel");
+			log.debug("create dataChannel");
 			WebRtcEndpoint webRtcEndpoint = new WebRtcEndpoint.Builder(pipeline).useDataChannels().build();
-			System.out.println("success creating dataChannel");
+			log.debug("success creating dataChannel");
 			user.setWebRtcEndpoint(webRtcEndpoint);
 			users.put(session.getId(), user);
 
@@ -128,7 +128,7 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 			});
 			
 			WebRtcEndpoint point = new WebRtcEndpoint.Builder(pipeline).useDataChannels().build();
-			System.out.println("point : success creating dataChannel");
+			log.debug("point : success creating dataChannel");
 
 			webRtcEndpoint.connect(point);
 			point.connect(webRtcEndpoint);
@@ -153,13 +153,18 @@ public class ShowDataChannelHandler extends TextWebSocketHandler {
 	}
 	
 	private void receive(final WebSocketSession session, JsonObject jsonMessage) {
-		System.out.println("-------start receive()--------");
+		log.debug("-------start receive()--------");
 		try {
 			UserSession user = new UserSession();
+			log.debug("userSession create");
 			UserSession sendUser = users.get(session.getId());
+			log.debug("get sendUser from users");
 			WebRtcEndpoint rtcPoint = new WebRtcEndpoint.Builder(sendUser.getMediaPipeline()).build();
+			log.debug("rtcPoint create");
 			user.setWebRtcEndpoint(rtcPoint);
+			log.debug("set rtcpoint in user");
 			sendUser.getWebRtcEndpoint().connect(user.getWebRtcEndpoint());
+			log.debug("connect success");
 			user.getWebRtcEndpoint().addIceCandidateFoundListener(new EventListener<IceCandidateFoundEvent>() {
 				
 				@Override
