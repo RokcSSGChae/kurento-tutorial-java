@@ -92,6 +92,11 @@ function start() {
 		webRtcPeer.send(data);
 		dataChannelSend.value = "";
 	});
+	
+	var viewButton = document.getElementById('view');
+	viewButton.addEventListener("click", function() {
+		receive();
+	});
 
 	function onOpen(event) {
 		dataChannelSend.disabled = false;
