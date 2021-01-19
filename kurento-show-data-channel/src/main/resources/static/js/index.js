@@ -171,7 +171,7 @@ function receive() {
 		configuration: configuration
 	}
 
-	webRtcPeer2 = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options,
+	webRtcPeer2 = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options,
 		function(error) {
 			if (error) {
 				return console.error(error);
