@@ -148,14 +148,12 @@ function receive() {
 	}
 	
 	function onOpen(event) {
-		dataChannelSend.disabled = false;
-		dataChannelSend.focus();
-		$('#send').attr('disabled', false);
+		dataChannelRecv.disabled = false;
+		dataChannelRecv.focus();
 	}
 
 	function onClosed(event) {
-		dataChannelSend.disabled = true;
-		$('#send').attr('disabled', true);
+		dataChannelRecv.disabled = true;
 	}
 
 	var configuration = {
