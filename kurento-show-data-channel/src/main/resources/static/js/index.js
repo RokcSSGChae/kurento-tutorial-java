@@ -125,7 +125,7 @@ function start() {
 			onclose: onClosed
 		},
 		onicecandidate: onIceCandidate,
-		/*configuration: configuration,*/
+		configuration: configuration,
 		mediaConstraints: constraints
 	}
 
@@ -172,8 +172,8 @@ function receive() {
 			onClosed: onClosed,
 			onmessage: onMessage
 		},
-		onicecandidate: onIceCandidate
-		/*configuration: configuration*/
+		onicecandidate: onIceCandidate,
+		configuration: configuration
 	}
 
 	webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options,
