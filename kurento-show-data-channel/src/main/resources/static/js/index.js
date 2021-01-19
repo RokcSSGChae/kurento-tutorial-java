@@ -17,6 +17,7 @@
 
 var ws = new WebSocket('wss://' + location.host + '/showdatachannel');
 var webRtcPeer;
+var webRtcPeer2;
 var state = null;
 
 const I_CAN_START = 0;
@@ -162,12 +163,12 @@ function receive(){
 			configuration : configuration
 	}
 
-	webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options,
+	webRtcPeer2 = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options,
 			function(error) {
 		if (error) {
 			return console.error(error);
 		}
-		webRtcPeer.generateOffer(onOfferReceiver);
+		webRtcPeer2.generateOffer(onOfferReceiver);
 	});
 }
 
@@ -220,7 +221,7 @@ function startResponse(message) {
 function receiveResponse(message) {
 	console.log("SDP answer received from server. Processing ...");
 
-	webRtcPeer.processAnswer(message.sdpAnswer, function(error) {
+	webRtcPeer2.processAnswer(message.sdpAnswer, function(error) {
 		if (error)
 			return console.error(error);
 	});
