@@ -26,7 +26,7 @@ const I_AM_STARTING = 2;
 
 var chanId = 0;
 
-function getChannelName () {
+function getChannelName() {
 	return "TestChannel" + chanId++;
 }
 
@@ -45,31 +45,35 @@ ws.onmessage = function(message) {
 	console.info('Received message: ' + message.data);
 
 	switch (parsedMessage.id) {
-	case 'startResponse':
-		startResponse(parsedMessage);
-		break;
-	case 'receiveResponse':
-		receiveResponse(parsedMessage);
-		break;
-	case 'error':
-		if (state == I_AM_STARTING) {
-			setState(I_CAN_START);
-		}
-		onError("Error message from server: " + parsedMessage.message);
-		break;
-	case 'iceCandidate':
-		webRtcPeer.addIceCandidate(parsedMessage.candidate, function(error) {
-			if (error) {
-				console.error("Error adding candidate: " + error);
-				return;
+		case 'startResponse':
+			startResponse(parsedMessage);
+			break;
+		case 'receiveResponse':
+			receiveResponse(parsedMessage);
+			break;
+		case 'error':
+			if (state == I_AM_STARTING) {
+				setState(I_CAN_START);
 			}
-		});
-		break;
-	default:
-		if (state == I_AM_STARTING) {
-			setState(I_CAN_START);
-		}
-	onError('Unrecognized message', parsedMessage);
+			onError("Error message from server: " + parsedMessage.message);
+			break;
+		case 'iceCandidate':
+			webRtcPeer.addIceCandidate(parsedMessage.candidate, function(error) {
+				if (error) {
+					webRtcPeer2.addIceCandidate(parsedMessage.candidate, function(error) {
+						if (error) {
+							console.error("Error adding candidate: " + error);
+							return;
+						}
+					});
+				}
+			});
+			break;
+		default:
+			if (state == I_AM_STARTING) {
+				setState(I_CAN_START);
+			}
+			onError('Unrecognized message', parsedMessage);
 	}
 }
 
@@ -103,73 +107,73 @@ function start() {
 	console.log("Creating WebRtcPeer and generating local sdp offer ...");
 
 	var configuration = {
-  		'iceServers': [{
-    		'urls': 'turn:117.17.196.61:3478',
-    		'username' : 'testuser',
-    		'credential' : 'root',
-  		}]
+		'iceServers': [{
+			'urls': 'turn:117.17.196.61:3478',
+			'username': 'testuser',
+			'credential': 'root',
+		}]
 	};
-	
+
 	var constraints = {
-  		audio: true,
-  		video: false
+		audio: true,
+		video: false
 	};
 
 	var options = {
-			dataChannels : true,
-			dataChannelConfig: {
-				id : getChannelName(),
-				onopen : onOpen,
-				onclose : onClosed
-			},
-			onicecandidate : onIceCandidate,
-			configuration : configuration,
-			mediaConstraints: constraints
+		dataChannels: true,
+		dataChannelConfig: {
+			id: getChannelName(),
+			onopen: onOpen,
+			onclose: onClosed
+		},
+		onicecandidate: onIceCandidate,
+		configuration: configuration,
+		mediaConstraints: constraints
 	}
 
 	webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options,
-			function(error) {
-		if (error) {
-			return console.error(error);
-		}
-		webRtcPeer.generateOffer(onOffer);
-	});
+		function(error) {
+			if (error) {
+				return console.error(error);
+			}
+			webRtcPeer.generateOffer(onOffer);
+		});
 }
 
-function receive(){
+function receive() {
 	console.log("Receiving...")
 	var dataChannelRecv = document.getElementById('dataChannelRecv');
-	
+
 	function onMessage(event) {
 		console.log("Received data " + event["data"]);
 		dataChannelRecv.value = event["data"];
 	}
-	
+
 	var configuration = {
-  		'iceServers': [{
-    		'urls': 'turn:117.17.196.61:3478',
-    		'username' : 'testuser',
-    		'credential' : 'root',
-  		}]
+		'iceServers': [{
+			'urls': 'turn:117.17.196.61:3478',
+			'username': 'testuser',
+			'credential': 'root',
+		}]
 	};
 
 	var options = {
-			dataChannels : true,
-			dataChannelConfig: {
-				id : getChannelName(),
-				onmessage : onMessage
-			},
-			onicecandidate : onIceCandidate,
-			configuration : configuration
+		dataChannels: true,
+		dataChannelConfig: {
+			id: getChannelName(),
+			onmessage: onMessage
+		},
+		onicecandidate: onIceCandidate,
+		configuration: configuration
 	}
 
 	webRtcPeer2 = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options,
-			function(error) {
-		if (error) {
-			return console.error(error);
-		}
-		webRtcPeer2.generateOffer(onOfferReceiver);
-	});
+		function(error) {
+			if (error) {
+				return console.error(error);
+			}
+			webRtcPeer2.generateOffer(onOfferReceiver);
+		});
 }
 
 function onOfferReceiver(error, offerSdp) {
@@ -177,8 +181,8 @@ function onOfferReceiver(error, offerSdp) {
 		return console.error('Error generating the offer');
 	console.info('Invoking SDP offer callback function ' + location.host);
 	var message = {
-		id : 'receive',
-		sdpOffer : offerSdp
+		id: 'receive',
+		sdpOffer: offerSdp
 	}
 	sendMessage(message);
 }
@@ -188,8 +192,8 @@ function onOffer(error, offerSdp) {
 		return console.error("Error generating the offer");
 	console.info('Invoking SDP offer callback function ' + location.host);
 	var message = {
-			id : 'start',
-			sdpOffer : offerSdp
+		id: 'start',
+		sdpOffer: offerSdp
 	}
 	sendMessage(message);
 }
@@ -202,8 +206,8 @@ function onIceCandidate(candidate) {
 	console.log("Local candidate" + JSON.stringify(candidate));
 
 	var message = {
-			id : 'onIceCandidate',
-			candidate : candidate
+		id: 'onIceCandidate',
+		candidate: candidate
 	};
 	sendMessage(message);
 }
@@ -245,29 +249,29 @@ function receiveResponse(message) {
 
 function setState(nextState) {
 	switch (nextState) {
-	case I_CAN_START:
-		$('#start').attr('disabled', false);
-		$("#start").attr('onclick', 'start()');
-		$('#stop').attr('disabled', true);
-		$("#stop").removeAttr('onclick');
-		break;
+		case I_CAN_START:
+			$('#start').attr('disabled', false);
+			$("#start").attr('onclick', 'start()');
+			$('#stop').attr('disabled', true);
+			$("#stop").removeAttr('onclick');
+			break;
 
-	case I_CAN_STOP:
-		$('#start').attr('disabled', true);
-		$('#stop').attr('disabled', false);
-		$("#stop").attr('onclick', 'stop()');
-		break;
+		case I_CAN_STOP:
+			$('#start').attr('disabled', true);
+			$('#stop').attr('disabled', false);
+			$("#stop").attr('onclick', 'stop()');
+			break;
 
-	case I_AM_STARTING:
-		$('#start').attr('disabled', true);
-		$("#start").removeAttr('onclick');
-		$('#stop').attr('disabled', true);
-		$("#stop").removeAttr('onclick');
-		break;
+		case I_AM_STARTING:
+			$('#start').attr('disabled', true);
+			$("#start").removeAttr('onclick');
+			$('#stop').attr('disabled', true);
+			$("#stop").removeAttr('onclick');
+			break;
 
-	default:
-		onError("Unknown state " + nextState);
-	return;
+		default:
+			onError("Unknown state " + nextState);
+			return;
 	}
 	state = nextState;
 }
