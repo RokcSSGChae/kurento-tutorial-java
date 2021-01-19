@@ -92,11 +92,6 @@ function start() {
 		dataChannelSend.value = "";
 	});
 	
-	var viewButton = document.getElementById('view');
-	viewButton.addEventListener("click", function() {
-		receive();
-	});
-
 	function onOpen(event) {
 		dataChannelSend.disabled = false;
 		dataChannelSend.focus();
@@ -152,6 +147,17 @@ function receive() {
 		console.log("Received data " + event["data"]);
 		dataChannelRecv.value = event["data"];
 	}
+	
+	function onOpen(event) {
+		dataChannelSend.disabled = false;
+		dataChannelSend.focus();
+		$('#send').attr('disabled', false);
+	}
+
+	function onClosed(event) {
+		dataChannelSend.disabled = true;
+		$('#send').attr('disabled', true);
+	}
 
 	var configuration = {
 		'iceServers': [{
@@ -165,6 +171,8 @@ function receive() {
 		dataChannels: true,
 		dataChannelConfig: {
 			id: getChannelName(),
+			onopen : onOpen,
+			onClosed: onClosed,
 			onmessage: onMessage
 		},
 		onicecandidate: onIceCandidate,
@@ -258,6 +266,7 @@ function setState(nextState) {
 			$("#start").attr('onclick', 'start()');
 			$('#stop').attr('disabled', true);
 			$("#stop").removeAttr('onclick');
+			$('#view').attr('onclick', 'receive()');
 			break;
 
 		case I_CAN_STOP:
