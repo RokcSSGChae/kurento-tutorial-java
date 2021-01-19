@@ -88,7 +88,6 @@ function start() {
 	sendButton.addEventListener("click", function() {
 		var data = dataChannelSend.value;
 		console.log("Send button pressed. Sending data " + data);
-		receive();
 		webRtcPeer.send(data);
 		dataChannelSend.value = "";
 	});
